@@ -143,6 +143,8 @@ public class FluentdHandler extends Handler {
      * that will be used to populate the map.
      * See https://github.com/veselov/fluentd-jdk-handler/blob/master/README.md
      * for the information on this format.
+     * @param s format string to translate to list of field extractors.
+     * @return list of field extractors created based on the specified format.
      */
     public static List<FieldExtractor> parseFormat(String s) {
 

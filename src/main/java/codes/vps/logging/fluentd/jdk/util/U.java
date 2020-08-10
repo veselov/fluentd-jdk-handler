@@ -248,8 +248,9 @@ public class U {
 
     /**
      * Extracts result from a {@link Callable}, throwing any produced exception as
-     * a runtime exception.
+     * an unchecked exception.
      * @param from get result from
+     * @param <T> type that both the specified {@link Callable} and this function shall return.
      * @return result from Callable
      */
     @SuppressWarnings("unused")
