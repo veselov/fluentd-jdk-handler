@@ -29,7 +29,7 @@ public class FluentdHandler extends Handler {
     /**
      * Default logger format.
      */
-    public final static String DEFAULT_FORMAT = "tag\"\";message\"${level10n} [${tid}] ${class}.${method} ${l10n}\";stack\"${trace}\"";
+    public final static String DEFAULT_FORMAT = "$tag\"\";message\"${level10n} [${tid}] ${class}.${method} ${l10n}\";stack\"${trace}\"";
     private final static FluentLoggerFactory factory = new FluentLoggerFactory();
 
     private Function<LogRecord, Map<String, Object>> mapper;
@@ -106,11 +106,11 @@ public class FluentdHandler extends Handler {
             }
         }
 
-        String tag = (String) result.get("tag");
-        result.remove("tag");
+        String tag = (String) result.get("$tag");
+        result.remove("$tag");
 
-        Long timestamp = U.ifNotNull(result.get("timestamp"), r->((Number)r).longValue(), null);
-        result.remove("timestamp");
+        Long timestamp = U.ifNotNull(result.get("$timestamp"), r->((Number)r).longValue(), null);
+        result.remove("$timestamp");
 
         if (tag == null) {
             tag = record.getLoggerName();

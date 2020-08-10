@@ -69,25 +69,25 @@ for information on how it is used), default is 8 mebibytes.
 
 The formatter process takes a [LogRecord][5] object and converts it into the input suitable for
 [fluent-logger-java][1]. Format definition specifies a series of statements that indicate which keys
-in that arbitrary map should be populated with which values. Then, keys with names "tag" and "timestamp"
+in that arbitrary map should be populated with which values. Then, keys with names "$tag" and "$timestamp"
 are treated specially, they are removed from the map, and fed as tag and timestamp parameters directly
 into [fluent-logger-java][1].
 
-If tag is not specified, it is populated from logger name value of the log record. If timestamp is not 
-specified, then it is populated from `millis` property of the log record.
+If tag ends up being not specified, it is populated from logger name value of the log record. If timestamp ends up 
+being not specified, then it is populated from `millis` property of the log record.
 
 Formatter string is defined as follows:
 * `format := item [ ';' item ... ]`
 * `item := field '"' format '"' [ type ]`
-* `field := <literal JSON field name>`
+* `field := <literal map field name>`
 * `type := 's' | 'n' | 'b'` (string, number, or boolean)
 * `format := <format string to generate value>`
 
 The literals in format string will be copied (after escaping) to the output as is.
 variables can, however, be referenced using `${...}`, e.g. `${level}`. When referencing
-`millis` - additional date format, after ',', can be provided, in this case the value
+`millis` - additional date format, after `,`, can be provided, in this case the value
 will be passed through a date formatter:
-[SimpleDateFormatter][6].
+[SimpleDateFormatter][6]. For example: `date"${millis,yyyy-MM-dd'T'HH:mm:ss.SSSZ}`
 
 Any character can be escaped from current level of processing
 by specifying backslash (`\ `) character in front of it. To insert backslash itself,
@@ -112,8 +112,7 @@ List of variables that can be referenced (based on LogRecord class parameters):
 * `trace` - entire stack trace of an attached exception, if any, or an empty string
 
 Example format:
-`logger"${logger}";level"${level}";timestamp"${millis}n";message"${l10n}"`
-
+`logger"${logger}";level"${level}";$timestamp"${millis}n";message"${l10n}"`
 
 
 [1]: https://github.com/fluent/fluent-logger-java
