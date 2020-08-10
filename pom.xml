@@ -9,6 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>Fluentd JDK logging handler</name>
+    <description>JDK logging handler implementation that sends log to forward input of fluentd</description>
+    <url>https://fluentd-jdk-handler.vps.codes/</url>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -16,6 +18,15 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Pawel S. Veselov</name>
+            <email>pawel.veselov@gmail.com</email>
+            <organization>Self</organization>
+            <organizationUrl>https://github.com/veselov</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/veselov/fluentd-jdk-handler</url>
