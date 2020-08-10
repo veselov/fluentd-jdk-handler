@@ -28,7 +28,7 @@ The project also produced a jar with all dependencies which is more suitable for
 You can use the following Maven command to retrieve the jar:
 
 ```
-$ mvn codes.apache.maven.plugins:maven-dependency-plugin:3.1.2:get\
+$ mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:get\
  -Dartifact=codes.vps:fluentd-jdk-handler:0.1:jar:jar-with-dependencies
 ```
 
