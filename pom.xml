@@ -105,6 +105,13 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <!--
+                      You must have a "fluentd-jdk-handler.sign" profile defined in
+                      ~/.m2/settings.xml for this to work. The profile must point to
+                      the correct signing key
+                      -->
+                    <releaseProfiles>fluentd-jdk-handler.sign</releaseProfiles>
+                    <useReleaseProfile>true</useReleaseProfile>
                 </configuration>
             </plugin>
 
@@ -177,6 +184,35 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
