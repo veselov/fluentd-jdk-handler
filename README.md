@@ -1,6 +1,8 @@
 # fluentd-jdk-handler
 Fluentd JDK log handler implementation
 
+[![javadoc](https://javadoc.io/badge2/codes.vps/fluentd-jdk-handler/javadoc.svg)](https://javadoc.io/doc/codes.vps/fluentd-jdk-handler)
+
 This project provides JDK logging handler implementation that logs to fluentd daemon. The handler
 uses [fluent-logger-java][1] library, which sends logging data to an `in_forward` input plugin.
 
