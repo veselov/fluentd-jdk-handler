@@ -33,7 +33,7 @@ public class Test1 {
             result.put(fe.getFieldName(), fe.extract(lr));
         }
 
-        Assertions.assertEquals("", result.get("tag"));
+        Assertions.assertEquals("", result.get("$tag"));
         Assertions.assertEquals("", result.get("stack"));
         Assertions.assertEquals("FINE [14] src.method a", result.get("message"));
 
