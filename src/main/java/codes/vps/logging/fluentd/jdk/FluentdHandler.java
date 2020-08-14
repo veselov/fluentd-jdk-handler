@@ -119,7 +119,7 @@ public class FluentdHandler extends Handler {
             timestamp = record.getMillis();
         }
 
-        logger.log(tag, result, timestamp);
+        logger.log(tag, result, timestamp / 1000);
 
     }
 

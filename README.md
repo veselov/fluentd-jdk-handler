@@ -20,7 +20,7 @@ This code is available at Maven Central
 <dependncy>
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
 </dependency>
 ```
 
@@ -76,7 +76,9 @@ are treated specially, they are removed from the map, and fed as tag and timesta
 into [fluent-logger-java][1].
 
 If tag ends up being not specified, it is populated from logger name value of the log record. If timestamp ends up 
-being not specified, then it is populated from `millis` property of the log record.
+being not specified, then it is populated from `millis` property of the log record. Note that timestamp value
+as received by this library shall be in milliseconds, however it is converted to seconds (milliseconds are
+truncated off) before it is passed to the Fluentd library. 
 
 Formatter string is defined as follows:
 * `format := item [ ';' item ... ]`
