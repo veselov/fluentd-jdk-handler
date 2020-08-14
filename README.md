@@ -29,11 +29,11 @@ You can use the following Maven command to retrieve the jar:
 
 ```
 $ mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:get\
- -Dartifact=codes.vps:fluentd-jdk-handler:0.1:jar:jar-with-dependencies
+ -Dartifact=codes.vps:fluentd-jdk-handler:0.2:jar:jar-with-dependencies
 ```
 
 The JAR will then be downloaded into (unless you've changed your local Maven repository location) to
-`~/.m2/repository/codes/vps/fluentd-jdk-handler/0.1/fluentd-jdk-handler-0.1-jar-with-dependencies.jar`
+`~/.m2/repository/codes/vps/fluentd-jdk-handler/0.2/fluentd-jdk-handler-0.2-jar-with-dependencies.jar`
 
 This can be used in scripts and so on.
 
