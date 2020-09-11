@@ -4,7 +4,7 @@
 
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
 
     <name>Fluentd JDK logging handler</name>
     <description>JDK logging handler implementation that sends log to forward input of fluentd</description>
@@ -227,16 +227,23 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <versions.fluentd-logger>0.3.4</versions.fluentd-logger>
+        <versions.fluency>2.4.0</versions.fluency>
         <versions.jetbrains-annotations>16.0.1</versions.jetbrains-annotations>
         <versions.junit-jupiter-engine>5.6.2</versions.junit-jupiter-engine>
     </properties>
 
     <dependencies>
+
         <dependency>
-            <groupId>org.fluentd</groupId>
-            <artifactId>fluent-logger</artifactId>
-            <version>${versions.fluentd-logger}</version>
+            <groupId>org.komamitsu</groupId>
+            <artifactId>fluency-core</artifactId>
+            <version>${versions.fluency}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.komamitsu</groupId>
+            <artifactId>fluency-fluentd</artifactId>
+            <version>${versions.fluency}</version>
         </dependency>
 
         <dependency>

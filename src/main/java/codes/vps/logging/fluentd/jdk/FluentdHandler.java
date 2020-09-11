@@ -1,13 +1,15 @@
 package codes.vps.logging.fluentd.jdk;
 
+import codes.vps.logging.fluentd.jdk.util.ConsumerT;
 import codes.vps.logging.fluentd.jdk.util.ForwardString;
-import org.fluentd.logger.FluentLogger;
-import org.fluentd.logger.FluentLoggerFactory;
-import org.fluentd.logger.sender.ExponentialDelayReconnector;
-import org.fluentd.logger.sender.Reconnector;
 import codes.vps.logging.fluentd.jdk.util.StringWinder;
 import codes.vps.logging.fluentd.jdk.util.U;
+import org.jetbrains.annotations.NotNull;
+import org.komamitsu.fluency.Fluency;
+import org.komamitsu.fluency.fluentd.FluencyBuilderForFluentd;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,12 +32,11 @@ public class FluentdHandler extends Handler {
      * Default logger format.
      */
     public final static String DEFAULT_FORMAT = "$tag\"\";message\"${level10n} [${tid}] ${class}.${method} ${l10n}\";stack\"${trace}\"";
-    private final static FluentLoggerFactory factory = new FluentLoggerFactory();
 
     private Function<LogRecord, Map<String, Object>> mapper;
     private List<FieldExtractor> extractors;
 
-    private FluentLogger logger;
+    private Fluency logger;
 
     /**
      * Creates new handler from JDK logging configuration. This construction should only
@@ -60,24 +61,89 @@ public class FluentdHandler extends Handler {
             throw new NullPointerException("No extraction properties provided, specify extractors or mapper in the builder");
         }
 
-        initLogger(b);
         this.extractors = b.extractors;
         this.mapper = b.mapper;
+
+        initLogger(b);
+
     }
 
     private void configure() {
         Builder b = new Builder();
-        U.whenNotNull(getProperty("tag_prefix"), p->b.tagPrefix = p);
-        U.whenNotNull(getProperty("host"), p->b.host = p);
-        U.whenNotNull(getProperty("port"), p->b.port = Integer.parseInt(p));
-        U.whenNotNull(getProperty("timeout_ms"), p->b.timeout = Integer.parseInt(p));
-        U.whenNotNull(getProperty("buffer_capacity"), p->b.bufferCapacity = Integer.parseInt(p));
-        U.whenNotNull(getProperty("format"), p->b.extractors = parseFormat(p));
+        // our stuff
+        cfg("tag_prefix", p->b.tagPrefix = p);
+        cfg("host", p->b.host = p);
+        cfg("port", p->b.port = p);
+        cfg("format", p->b.extractors = parseFormat(p));
+
+        FluencyBuilderForFluentd fb = b.fluencyBuilder;
+
+        // fluency-fluentd
+        iCfg("sender_max_retry_count", fb::setSenderMaxRetryCount);
+        iCfg("sender_base_retry_interval_millis", fb::setSenderBaseRetryIntervalMillis);
+        iCfg("sender_max_retry_interval_millis", fb::setSenderMaxRetryIntervalMillis);
+        bCfg("ack_response_mode", fb::setAckResponseMode);
+        bCfg("ssl_enabled", fb::setSslEnabled);
+        iCfg("connection_timeout_milli", fb::setConnectionTimeoutMilli);
+        iCfg("read_timeout_milli", fb::setReadTimeoutMilli);
+
+        // fluency
+        lCfg("max_buffer_size", fb::setMaxBufferSize);
+        iCfg("buffer_chunk_initial_size", fb::setBufferChunkInitialSize);
+        iCfg("buffer_chunk_retention_size", fb::setBufferChunkRetentionSize);
+        iCfg("buffer_chunk_retention_time_millis", fb::setBufferChunkRetentionTimeMillis);
+        iCfg("flush_attempt_interval_millis", fb::setFlushAttemptIntervalMillis);
+        cfg("file_backup_dir", fb::setFileBackupDir);
+        iCfg("wait_until_buffer_flushed", fb::setWaitUntilBufferFlushed);
+        iCfg("wait_until_flusher_terminated", fb::setWaitUntilFlusherTerminated);
+        bCfg("jvm_head_buffer_mode", fb::setJvmHeapBufferMode);
+
         configure(b);
     }
 
+    private void cfg(String prop, @NotNull ConsumerT<String, Exception> fun) {
+        U.whenNotNull(getProperty(prop), fun);
+    }
+
+    private void iCfg(String prop, @NotNull ConsumerT<Integer, Exception> fun) {
+        U.whenNotNull(getProperty(prop), p->fun.accept(Integer.parseInt(p)));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void lCfg(String prop, @NotNull ConsumerT<Long, Exception> fun) {
+        U.whenNotNull(getProperty(prop), p->fun.accept(Long.parseLong(p)));
+    }
+
+    private void bCfg(String prop, @NotNull ConsumerT<Boolean, Exception> fun) {
+        U.whenNotNull(getProperty(prop), p->fun.accept("true".equals(p)));
+    }
+
     private void initLogger(Builder b) {
-        logger = factory.getLogger(b.tagPrefix, b.host, b.port, b.timeout, b.bufferCapacity, b.reconnector);
+
+        FluencyBuilderForFluentd builder = new FluencyBuilderForFluentd();
+
+        String [] hosts = b.getHost().split(",");
+        String [] ports = b.getPort().split(",");
+
+        if (hosts.length != ports.length) {
+            throw new IllegalArgumentException("List of hosts must match list of ports");
+        }
+
+        if (hosts.length == 1) {
+
+            logger = builder.build(hosts[0], Integer.parseInt(ports[0]));
+
+        } else {
+
+            List<InetSocketAddress> list = new ArrayList<>();
+            for (int i=0; i<hosts.length; i++) {
+                list.add(new InetSocketAddress(hosts[i], Integer.parseInt(ports[i])));
+            }
+
+            logger = builder.build(list);
+
+        }
+
     }
 
     private String getProperty(String name) {
@@ -106,11 +172,9 @@ public class FluentdHandler extends Handler {
             }
         }
 
-        String tag = (String) result.get("$tag");
-        result.remove("$tag");
+        String tag = (String) result.remove("$tag");
 
-        Long timestamp = U.ifNotNull(result.get("$timestamp"), r->((Number)r).longValue(), null);
-        result.remove("$timestamp");
+        Long timestamp = U.ifNotNull(result.remove("$timestamp"), r->((Number)r).longValue(), null);
 
         if (tag == null) {
             tag = record.getLoggerName();
@@ -119,7 +183,11 @@ public class FluentdHandler extends Handler {
             timestamp = record.getMillis();
         }
 
-        logger.log(tag, result, timestamp / 1000);
+        try {
+            logger.emit(tag, timestamp, result);
+        } catch (IOException e) {
+            throw U.doThrow(e);
+        }
 
     }
 
@@ -127,7 +195,7 @@ public class FluentdHandler extends Handler {
      * Flushes logged messages.
      */
     public void flush() {
-        logger.flush();
+        U.reThrow(()->logger.flush());
     }
 
     /**
@@ -135,7 +203,7 @@ public class FluentdHandler extends Handler {
      * Handler must not be used after this method is called.
      */
     public void close() {
-        logger.close();
+        U.reThrow(()->logger.close());
     }
 
     /**
@@ -211,15 +279,17 @@ public class FluentdHandler extends Handler {
     @SuppressWarnings({"FieldMayBeFinal", "UnusedReturnValue"})
     public static class Builder {
 
-        // builder is filled with default values.
-        private String tagPrefix = "";
+        // builder is filled with default values. Fluency default values are based on
+        // https://github.com/komamitsu/fluency (and from source code when needed)
+
+        FluencyBuilderForFluentd fluencyBuilder = new FluencyBuilderForFluentd();
+
         private String host = "127.0.0.1";
-        private int port = 24224;
-        private int timeout = 3 * 1000;
-        private int bufferCapacity = 8 * 1024 * 1024;
-        private Reconnector reconnector = new ExponentialDelayReconnector();
+        private String port = "24224";
+        private String tagPrefix = "";
         private Function<LogRecord, Map<String, Object>> mapper;
         private List<FieldExtractor> extractors = parseFormat(DEFAULT_FORMAT);
+
 
         /**
          * Returns currently set tag prefix.
@@ -240,15 +310,17 @@ public class FluentdHandler extends Handler {
         }
 
         /**
-         * Returns currently set host to log messages to.
-         * @return currently set host.
+         * Returns currently set host(s) to log messages to.
+         * @return currently set host(s).
          */
         public String getHost() {
             return host;
         }
 
         /**
-         * Sets host to send log messages to.
+         * Sets host to send log messages to. To connect to multiple fluentd instances simultaneously,
+         * specify comma-separated list. The list length must match value passed to
+         * {@link #setPort(String)}
          * @param host host to use
          * @return this builder instance
          */
@@ -258,78 +330,22 @@ public class FluentdHandler extends Handler {
         }
 
         /**
-         * Returns current set port to log messages to.
-         * @return currently set port.
+         * Returns current set port(s) to log messages to.
+         * @return currently set port(s).
          */
-        public int getPort() {
+        public String getPort() {
             return port;
         }
 
         /**
-         * Sets port to send log messages to.
-         * @param port port to use
+         * Sets port to send log messages to.  To connect to multiple fluentd instances
+         * simultaneously, specify comma-separated list. The list length must match value passed to
+         * {@link #setHost(String)}
+         * @param port port(s) to use
          * @return this builder instance
          */
-        public Builder setPort(int port) {
+        public Builder setPort(String port) {
             this.port = port;
-            return this;
-        }
-
-        /**
-         * Returns currently set connection timeout.
-         * @return currently set connection timeout
-         */
-        public int getTimeout() {
-            return timeout;
-        }
-
-        /**
-         * Sets connection timeout, in milliseconds.
-         * See https://github.com/fluent/fluent-logger-java for more information.
-         * @param timeout_ms connection timeout to use
-         * @return this builder instance
-         */
-        public Builder setTimeout(int timeout_ms) {
-            this.timeout = timeout_ms;
-            return this;
-        }
-
-        /**
-         * Returns currently set buffer capacity.
-         * @return currently set buffer capacity.
-         */
-        public int getBufferCapacity() {
-            return bufferCapacity;
-        }
-
-        /**
-         * Sets buffer capacity for the fluentd library, in bytes.
-         * See https://github.com/fluent/fluent-logger-java for more information.
-         * @param bufferCapacity buffer capacity to use
-         * @return this builder instance
-         */
-        public Builder setBufferCapacity(int bufferCapacity) {
-            this.bufferCapacity = bufferCapacity;
-            return this;
-        }
-
-        /**
-         * Returns currently used reconnector.
-         * @return currently used reconnector.
-         */
-        public Reconnector getReconnector() {
-            return reconnector;
-        }
-
-        /**
-         * Sets reconnector to use.
-         * See https://github.com/fluent/fluent-logger-java for more information.
-         * By default {@link ExponentialDelayReconnector} is used.
-         * @param reconnector reconnector to use
-         * @return this builder instance
-         */
-        public Builder setReconnector(Reconnector reconnector) {
-            this.reconnector = reconnector;
             return this;
         }
 
@@ -383,6 +399,16 @@ public class FluentdHandler extends Handler {
         public Builder setExtractors(List<FieldExtractor> extractors) {
             this.extractors = extractors;
             return this;
+        }
+
+        /**
+         * Return underlying fluency fluentd builder. Configure this builder
+         * to modify fluency specific parameters.
+         * @return fluency builder
+         */
+        @NotNull
+        public FluencyBuilderForFluentd getFluencyBuilder() {
+            return fluencyBuilder;
         }
 
         public Builder() {
