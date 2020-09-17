@@ -5,6 +5,7 @@ import codes.vps.logging.fluentd.jdk.util.ForwardString;
 import codes.vps.logging.fluentd.jdk.util.StringWinder;
 import codes.vps.logging.fluentd.jdk.util.U;
 import org.jetbrains.annotations.NotNull;
+import org.komamitsu.fluency.EventTime;
 import org.komamitsu.fluency.Fluency;
 import org.komamitsu.fluency.fluentd.FluencyBuilderForFluentd;
 
@@ -184,7 +185,7 @@ public class FluentdHandler extends Handler {
         }
 
         try {
-            logger.emit(tag, timestamp, result);
+            logger.emit(tag, EventTime.fromEpochMilli(timestamp), result);
         } catch (IOException e) {
             throw U.doThrow(e);
         }
