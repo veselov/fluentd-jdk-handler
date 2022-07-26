@@ -17,7 +17,7 @@ JavaDocs for the implementation (latest version) can be found [here][3]
 This code is available at Maven Central
 
 ```xml
-<dependncy>
+<dependency>
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
     <version>0.3</version>
