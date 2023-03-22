@@ -12,7 +12,7 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -111,6 +111,28 @@
         <plugins>
 
             <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>7.4.4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>v-check</id>
+                        <configuration>
+                            <suppressionFiles>
+                                <supressionFile>dcm.suppression.xml</supressionFile>
+                            </suppressionFiles>
+                            <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                        </configuration>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
@@ -171,7 +193,6 @@
                 </configuration>
             </plugin>
 
-
             <plugin>
 
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -227,9 +248,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <versions.fluency>2.4.0</versions.fluency>
-        <versions.jetbrains-annotations>16.0.1</versions.jetbrains-annotations>
-        <versions.junit-jupiter-engine>5.6.2</versions.junit-jupiter-engine>
+        <versions.fluency>2.7.0</versions.fluency>
+        <versions.jetbrains-annotations>24.0.1</versions.jetbrains-annotations>
+        <versions.junit-jupiter-engine>5.9.2</versions.junit-jupiter-engine>
     </properties>
 
     <dependencies>
@@ -260,5 +281,16 @@
         </dependency>
 
     </dependencies>
+
+    <dependencyManagement>
+        <!-- This section is needed for vulnerabilities handling -->
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.14.0-rc1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

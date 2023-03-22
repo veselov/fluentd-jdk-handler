@@ -20,7 +20,7 @@ This code is available at Maven Central
 <dependency>
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
 </dependency>
 ```
 
@@ -29,11 +29,11 @@ You can use the following Maven command to retrieve the jar:
 
 ```
 $ mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:get\
- -Dartifact=codes.vps:fluentd-jdk-handler:0.3:jar:jar-with-dependencies
+ -Dartifact=codes.vps:fluentd-jdk-handler:0.4:jar:jar-with-dependencies
 ```
 
 The JAR will then be downloaded into (unless you've changed your local Maven repository location) to
-`~/.m2/repository/codes/vps/fluentd-jdk-handler/0.3/fluentd-jdk-handler-0.3-jar-with-dependencies.jar`
+`~/.m2/repository/codes/vps/fluentd-jdk-handler/0.4/fluentd-jdk-handler-0.4-jar-with-dependencies.jar`
 
 This can be used in scripts and so on.
 
