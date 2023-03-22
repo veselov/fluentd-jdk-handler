@@ -4,7 +4,7 @@
 
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
-    <version>0.4</version>
+    <version>0.5-SNAPSHOT</version>
 
     <name>Fluentd JDK logging handler</name>
     <description>JDK logging handler implementation that sends log to forward input of fluentd</description>
@@ -30,7 +30,7 @@
         <url>https://github.com/veselov/fluentd-jdk-handler</url>
         <connection>scm:git:https://github.com/veselov/fluentd-jdk-handler.git</connection>
         <developerConnection>scm:git:git@github.com:veselov/fluentd-jdk-handler.git</developerConnection>
-        <tag>v0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
