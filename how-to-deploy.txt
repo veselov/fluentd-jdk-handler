@@ -1,1 +1,1 @@
-mvn -Ppawel.gpg verify gpg:sign deploy
+mvn -Pfluentd-jdk-handler.sign verify gpg:sign deploy
