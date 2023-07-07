@@ -116,6 +116,24 @@ public class FieldExtractorImpl implements FieldExtractor {
                 continue;
             }
 
+            if (mode == 1 && c == '[') {
+                mode = 3;
+                if (sb.length() > 0) {
+                    String constant = sb.toString();
+                    ext = meld.apply(ext, (l)->constant);
+                    sb = new StringBuilder();
+                }
+                continue;
+            }
+
+            if (mode == 3 && c == ']') {
+                mode = 0;
+                String inlay = sb.toString();
+                ext = meld.apply(ext, (l) -> { String v = System.getenv(inlay); if (v == null) { return ""; } return v; });
+                sb = new StringBuilder();
+                continue;
+            }
+
             if (mode == 1 && c == '{') {
                 mode = 2;
                 if (sb.length() > 0) {
@@ -200,6 +218,10 @@ public class FieldExtractorImpl implements FieldExtractor {
 
         if (mode == 2) {
             throw new IllegalArgumentException("Unterminated } in "+item);
+        }
+
+        if (mode == 3) {
+            throw new IllegalArgumentException("Unterminated ] in "+item);
         }
 
         if (sb.length() > 0) {
