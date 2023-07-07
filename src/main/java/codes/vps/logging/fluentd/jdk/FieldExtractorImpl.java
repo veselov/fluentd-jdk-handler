@@ -116,6 +116,24 @@ public class FieldExtractorImpl implements FieldExtractor {
                 continue;
             }
 
+            if (mode == 1 && c == '[') {
+                mode = 2;
+                if (sb.length() > 0) {
+                    String constant = sb.toString();
+                    ext = meld.apply(ext, (l)->constant);
+                    sb = new StringBuilder();
+                }
+                continue;
+            }
+
+            if (mode == 2 && c == ']') {
+                mode = 0;
+                String inlay = sb.toString();
+                ext = meld.apply(ext, (l) -> l.getResourceBundle().getString(inlay));
+                sb = new StringBuilder();
+                continue;
+            }
+
             if (mode == 1 && c == '{') {
                 mode = 2;
                 if (sb.length() > 0) {

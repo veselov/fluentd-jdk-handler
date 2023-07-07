@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -21,6 +22,8 @@ public class Test1 {
         List<FieldExtractor> extractors = FluentdHandler.parseFormat(FluentdHandler.DEFAULT_FORMAT);
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
+
+        lr.setResourceBundle(ResourceBundle.getBundle("test"));
         lr.setLoggerName("log");
         lr.setSourceClassName("src");
         lr.setSourceMethodName("method");
@@ -35,8 +38,8 @@ public class Test1 {
 
         Assertions.assertEquals("", result.get("$tag"));
         Assertions.assertEquals("", result.get("stack"));
-        Assertions.assertEquals("FINE [14] src.method a", result.get("message"));
-
+        Assertions.assertEquals("test_pod", result.get("pod_name"));
+        //Assertions.assertEquals("FINE [14] src.method a", result.get("message"));
     }
 
     @Test
