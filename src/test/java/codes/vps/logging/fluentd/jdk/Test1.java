@@ -23,7 +23,6 @@ public class Test1 {
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
 
-        lr.setResourceBundle(ResourceBundle.getBundle("test"));
         lr.setLoggerName("log");
         lr.setSourceClassName("src");
         lr.setSourceMethodName("method");
@@ -38,8 +37,30 @@ public class Test1 {
 
         Assertions.assertEquals("", result.get("$tag"));
         Assertions.assertEquals("", result.get("stack"));
+        Assertions.assertEquals(Level.FINE.getLocalizedName() + " [14] src.method a", result.get("message"));
+    }
+
+    @Test
+    public void test2() {
+
+        List<FieldExtractor> extractors = FluentdHandler.parseFormat("pod_name\"$[pod_name]\"");
+
+        LogRecord lr = new LogRecord(Level.FINE, "a");
+
+        lr.setResourceBundle(ResourceBundle.getBundle("test"));
+        lr.setLoggerName("log");
+        lr.setSourceClassName("src");
+        lr.setSourceMethodName("method");
+        lr.setMillis(100);
+        lr.setThreadID(14);
+
+        Map<String, Object> result = new HashMap<>();
+
+        for (FieldExtractor fe : extractors) {
+            result.put(fe.getFieldName(), fe.extract(lr));
+        }
+
         Assertions.assertEquals("test_pod", result.get("pod_name"));
-        //Assertions.assertEquals("FINE [14] src.method a", result.get("message"));
     }
 
     @Test

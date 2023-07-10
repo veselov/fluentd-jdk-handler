@@ -32,7 +32,7 @@ public class FluentdHandler extends Handler {
     /**
      * Default logger format.
      */
-    public final static String DEFAULT_FORMAT = "$tag\"\";message\"${level10n} [${tid}] ${class}.${method} ${l10n}\";stack\"${trace}\";pod_name\"$[pod_name]\"";
+    public final static String DEFAULT_FORMAT = "$tag\"\";message\"${level10n} [${tid}] ${class}.${method} ${l10n}\";stack\"${trace}\"";
 
     private Function<LogRecord, Map<String, Object>> mapper;
     private List<FieldExtractor> extractors;
