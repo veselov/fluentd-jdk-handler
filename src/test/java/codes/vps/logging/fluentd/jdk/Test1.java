@@ -3,6 +3,7 @@ package codes.vps.logging.fluentd.jdk;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,11 +44,15 @@ public class Test1 {
     @Test
     public void test2() {
 
-        List<FieldExtractor> extractors = FluentdHandler.parseFormat("pod_name\"$[pod_name]\"");
+        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]\"");
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
 
-        lr.setResourceBundle(ResourceBundle.getBundle("test"));
+        //set fake env vars
+        setEnv("HELLO", "world");
+        setEnv("POD_NAME", "myPodName");
+        setEnv("NAMESPACE", "myNamespace");
+
         lr.setLoggerName("log");
         lr.setSourceClassName("src");
         lr.setSourceMethodName("method");
@@ -60,7 +65,22 @@ public class Test1 {
             result.put(fe.getFieldName(), fe.extract(lr));
         }
 
-        Assertions.assertEquals("test_pod", result.get("pod_name"));
+        Assertions.assertEquals("world", result.get("hello"));
+        Assertions.assertEquals("myPodName", result.get("pod_name"));
+        Assertions.assertNotEquals("badNamespace", result.get("namespace"));
+    }
+
+    private static void setEnv(String key, String value) {
+        try {
+            Map<String, String> env = System.getenv();
+            Class<?> cl = env.getClass();
+            Field field = cl.getDeclaredField("m");
+            field.setAccessible(true);
+            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
+            writableEnv.put(key, value);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to set environment variable", e);
+        }
     }
 
     @Test

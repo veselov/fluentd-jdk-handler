@@ -117,7 +117,7 @@ public class FieldExtractorImpl implements FieldExtractor {
             }
 
             if (mode == 1 && c == '[') {
-                mode = 2;
+                mode = 3;
                 if (sb.length() > 0) {
                     String constant = sb.toString();
                     ext = meld.apply(ext, (l)->constant);
@@ -126,10 +126,10 @@ public class FieldExtractorImpl implements FieldExtractor {
                 continue;
             }
 
-            if (mode == 2 && c == ']') {
+            if (mode == 3 && c == ']') {
                 mode = 0;
                 String inlay = sb.toString();
-                ext = meld.apply(ext, (l) -> l.getResourceBundle().getString(inlay));
+                ext = meld.apply(ext, (l) -> System.getenv(inlay));
                 sb = new StringBuilder();
                 continue;
             }
