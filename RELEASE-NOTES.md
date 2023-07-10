@@ -7,3 +7,8 @@ Initial release
 ===
 
 Fixed timestamp value used in the outgoing events
+
+0.3
+===
+
+Support for OS environment variables

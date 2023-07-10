@@ -220,6 +220,10 @@ public class FieldExtractorImpl implements FieldExtractor {
             throw new IllegalArgumentException("Unterminated } in "+item);
         }
 
+        if (mode == 3) {
+            throw new IllegalArgumentException("Unterminated ] in "+item);
+        }
+
         if (sb.length() > 0) {
             String constant = sb.toString();
             ext = meld.apply(ext, (l)->constant);
