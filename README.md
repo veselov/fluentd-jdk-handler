@@ -20,7 +20,7 @@ This code is available at Maven Central
 <dependency>
     <groupId>codes.vps</groupId>
     <artifactId>fluentd-jdk-handler</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ```
 
@@ -118,6 +118,8 @@ variables can, however, be referenced using `${...}`, e.g. `${level}`. When refe
 will be passed through a date formatter:
 [SimpleDateFormatter][6]. For example: `date"${millis,yyyy-MM-dd'T'HH:mm:ss.SSSZ}`
 
+OS environment variables are also supported and can be referenced using `$[...]`, e.g. `$[PATH]`.
+
 Any character can be escaped from current level of processing
 by specifying backslash (`\ `) character in front of it. To insert backslash itself,
 simply escape it (`\\` parses as `\ `). Escaping must be done on multiple
@@ -141,7 +143,7 @@ List of variables that can be referenced (based on LogRecord class parameters):
 * `trace` - entire stack trace of an attached exception, if any, or an empty string
 
 Example format:
-`logger"${logger}";level"${level}";$timestamp"${millis}n";message"${l10n}"`
+`logger"${logger}";level"${level}";$timestamp"${millis}n";message"${l10n};path"$[PATH]"`
 
 
 [1]: https://github.com/komamitsu/fluency

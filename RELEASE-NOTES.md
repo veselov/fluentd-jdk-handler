@@ -8,7 +8,7 @@ Initial release
 
 Fixed timestamp value used in the outgoing events
 
-0.3
+0.5
 ===
 
 Support for OS environment variables
