@@ -44,7 +44,7 @@ public class Test1 {
     @Test
     public void test2() {
 
-        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]\"");
+        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\"");
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
 
@@ -67,6 +67,7 @@ public class Test1 {
 
         Assertions.assertEquals("world", result.get("hello"));
         Assertions.assertEquals("myPodName", result.get("pod_name"));
+        Assertions.assertEquals("myNamespace", result.get("namespace"));
         Assertions.assertNotEquals("badNamespace", result.get("namespace"));
     }
 

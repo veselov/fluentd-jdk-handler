@@ -129,7 +129,7 @@ public class FieldExtractorImpl implements FieldExtractor {
             if (mode == 3 && c == ']') {
                 mode = 0;
                 String inlay = sb.toString();
-                ext = meld.apply(ext, (l) -> System.getenv(inlay));
+                ext = meld.apply(ext, (l) -> { String v = System.getenv(inlay); if (v == null) { return ""; } return v; });
                 sb = new StringBuilder();
                 continue;
             }

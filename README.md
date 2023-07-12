@@ -119,6 +119,7 @@ will be passed through a date formatter:
 [SimpleDateFormatter][6]. For example: `date"${millis,yyyy-MM-dd'T'HH:mm:ss.SSSZ}`
 
 OS environment variables are also supported and can be referenced using `$[...]`, e.g. `$[PATH]`.
+If an environment variable is not set, the reference is replaced with an empty string.
 
 Any character can be escaped from current level of processing
 by specifying backslash (`\ `) character in front of it. To insert backslash itself,
