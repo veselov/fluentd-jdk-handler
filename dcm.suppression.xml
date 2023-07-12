@@ -9,4 +9,12 @@
  <cpe>cpe:/a:json-java_project:json-java</cpe>
 </suppress>
 
+<suppress>
+    <notes><![CDATA[
+        CVE-2023-35116 Disputed as invalid, no prospects of being resolved
+    ]]></notes>
+    <cve>CVE-2023-35116</cve>
+</suppress>
+
+
 </suppressions>

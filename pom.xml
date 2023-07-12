@@ -124,7 +124,7 @@
                             </suppressionFiles>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         </configuration>
-                        <phase>deploy</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>aggregate</goal>
                         </goals>
