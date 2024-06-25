@@ -44,7 +44,7 @@ public class Test1 {
     @Test
     public void test2() {
 
-        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\"");
+        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\";millis\"${millis}\";logger\"${logger}\"");
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
 

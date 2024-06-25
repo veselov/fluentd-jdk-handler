@@ -178,6 +178,8 @@ public class FieldExtractorImpl implements FieldExtractor {
                         }
                         return sb2.toString();
                     });
+                } else if ("logger".equals(inlay)) {
+                    ext = meld.apply(ext, LogRecord::getLoggerName);
                 } else if ("millis".equals(inlay)) {
                     ext = meld.apply(ext, LogRecord::getMillis);
                 } else if ("tid".equals(inlay)) {
