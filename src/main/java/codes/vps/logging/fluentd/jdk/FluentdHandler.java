@@ -388,7 +388,7 @@ public class FluentdHandler extends Handler {
          * Sets list of extractors to use for sending out a message. Note that
          * extractors are not used if a non-null mapper is set with {@link #setMapper(Function)}.
          * Extractors are used to populate the object map that is then forwarded to
-         * fluentd. See see https://github.com/veselov/fluentd-jdk-handler/blob/master/README.md#formatting
+         * fluentd. See <a href="https://github.com/veselov/fluentd-jdk-handler/blob/master/README.md#formatting">this</a>
          * on how the map is interpreted. Each extractor must indicate which map property it populates,
          * and contain functionality that produces its value.
          * Default extractors are created using {@link #parseFormat(String)}. Caller can create
