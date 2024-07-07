@@ -65,6 +65,7 @@ public class Test1 {
     @Test
     public void test2() throws Exception {
 
+
         String format = "hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\";millis\"${millis}\";logger\"${logger}\";tid\"${tid}\"";
         if (!isJava8) {
             format += ";nanos\"${nanos}\"";
@@ -83,7 +84,7 @@ public class Test1 {
         lr.setSourceMethodName("method");
         lr.setMillis(100);
 
-        if (!isJava8) {
+      if (!isJava8) {
             LogRecord.class.getMethod("setInstant", Instant.class).invoke(lr, Instant.ofEpochSecond(14, 812714563));
         }
 
@@ -92,7 +93,7 @@ public class Test1 {
         } else {
             lr.setThreadID(14);
         }
-
+      
         lr.setLoggerName(getClass().getName());
 
         Map<String, Object> result = new HashMap<>();
@@ -121,7 +122,6 @@ public class Test1 {
         } else {
             Assertions.assertEquals(14, result.get("tid"));
         }
-
     }
 
     private void setEnv(String key, String value) {
