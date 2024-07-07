@@ -113,7 +113,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.4.4</version>
+                <version>10.0.2</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>
@@ -122,7 +122,7 @@
                             <suppressionFiles>
                                 <supressionFile>dcm.suppression.xml</supressionFile>
                             </suppressionFiles>
-                            <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                            <failBuildOnCVSS>0</failBuildOnCVSS>
                         </configuration>
                         <phase>verify</phase>
                         <goals>

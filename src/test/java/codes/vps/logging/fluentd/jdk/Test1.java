@@ -44,7 +44,7 @@ public class Test1 {
     @Test
     public void test2() {
 
-        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\";millis\"${millis}\";logger\"${logger}\"");
+        List<FieldExtractor> extractors = FluentdHandler.parseFormat("hello\"$[HELLO]\";pod_name\"$[POD_NAME]\";namespace\"$[NAMESPACE]$[NOT-THERE]\";millis\"${millis}\";logger\"${logger}\";tid\"${tid}\"");
 
         LogRecord lr = new LogRecord(Level.FINE, "a");
 
@@ -58,6 +58,7 @@ public class Test1 {
         lr.setSourceMethodName("method");
         lr.setMillis(100);
         lr.setThreadID(14);
+        lr.setLoggerName(getClass().getName());
 
         Map<String, Object> result = new HashMap<>();
 
@@ -68,6 +69,9 @@ public class Test1 {
         Assertions.assertEquals("world", result.get("hello"));
         Assertions.assertEquals("myPodName", result.get("pod_name"));
         Assertions.assertEquals("myNamespace", result.get("namespace"));
+        Assertions.assertEquals(getClass().getName(), result.get("logger"));
+        Assertions.assertEquals(100L, result.get("millis"));
+        Assertions.assertEquals(14, result.get("tid"));
         Assertions.assertNotEquals("badNamespace", result.get("namespace"));
     }
 
@@ -80,7 +84,7 @@ public class Test1 {
             Map<String, String> writableEnv = (Map<String, String>) field.get(env);
             writableEnv.put(key, value);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to set environment variable", e);
+            throw new IllegalStateException("Failed to set environment variable. Make sure you're testing me with JDK8", e);
         }
     }
 
