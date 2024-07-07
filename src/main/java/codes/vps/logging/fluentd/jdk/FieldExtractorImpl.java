@@ -4,7 +4,11 @@ import codes.vps.logging.fluentd.jdk.util.ForwardString;
 import codes.vps.logging.fluentd.jdk.util.StringWinder;
 import codes.vps.logging.fluentd.jdk.util.U;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -14,6 +18,27 @@ public class FieldExtractorImpl implements FieldExtractor {
 
     private final String fieldName;
     private final Function<LogRecord, Object> extract;
+    private final static Method getLongThreadID;
+    private final static Method getInstant;
+
+    static {
+
+        Method m;
+        try {
+            m = LogRecord.class.getMethod("getLongThreadID");
+        } catch (NoSuchMethodException e) {
+            m = null;
+        }
+        getLongThreadID = m;
+
+        try {
+            m = LogRecord.class.getMethod("getInstant");
+        } catch (NoSuchMethodException e) {
+            m = null;
+        }
+        getInstant = m;
+
+    }
 
     @SuppressWarnings("unused")
     public FieldExtractorImpl(String fieldName, Function<LogRecord, Object> extract) {
@@ -182,8 +207,10 @@ public class FieldExtractorImpl implements FieldExtractor {
                     ext = meld.apply(ext, LogRecord::getLoggerName);
                 } else if ("millis".equals(inlay)) {
                     ext = meld.apply(ext, LogRecord::getMillis);
+                } else if ("nanos".equals(inlay)) {
+                    ext = meld.apply(ext, this::getNanos);
                 } else if ("tid".equals(inlay)) {
-                    ext = meld.apply(ext, LogRecord::getThreadID);
+                    ext = meld.apply(ext, this::getThreadId);
                 } else if ("trace".equals(inlay)) {
                     ext = meld.apply(ext, l->U.ifNotNull(l.getThrown(), U::throwableToString, ""));
                 } else if (inlay.startsWith("millis,")) {
@@ -249,6 +276,36 @@ public class FieldExtractorImpl implements FieldExtractor {
 
     }
 
+    protected Object getThreadId(LogRecord r) {
+
+        if (getLongThreadID == null) {
+            return r.getThreadID();
+        } else {
+            try {
+                return getLongThreadID.invoke(r);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    protected Object getNanos(LogRecord r) {
+
+        if (getInstant == null) {
+            return BigInteger.valueOf(r.getMillis()).multiply(BigInteger.valueOf(1000000));
+        }
+
+        try {
+            Instant i = (Instant)getInstant.invoke(r);
+            return BigInteger.valueOf(i.getEpochSecond()).multiply(BigInteger.valueOf(1000000000)).add(BigInteger.valueOf(i.getNano()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     public Object extract(LogRecord l) {
         return extract.apply(l);
     }
@@ -256,6 +313,5 @@ public class FieldExtractorImpl implements FieldExtractor {
     public String getFieldName() {
         return fieldName;
     }
-
 
 }

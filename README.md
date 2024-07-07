@@ -124,7 +124,7 @@ If an environment variable is not set, the reference is replaced with an empty s
 Any character can be escaped from current level of processing
 by specifying backslash (`\ `) character in front of it. To insert backslash itself,
 simply escape it (`\\` parses as `\ `). Escaping must be done on multiple
-levels if need to escape nested structures, i.e. the text is "unescaped" when:
+levels if it's needed to escape nested structures, i.e., the text is "unescaped" when:
 * items are extracted
 * field, type, format are extracted
 * contents of format are extracted
@@ -138,8 +138,9 @@ List of variables that can be referenced (based on LogRecord class parameters):
 * `message` - original message value as is;
 * `l10n` - localized message, message+parameters will be passed through l10n
 * `params` - localization parameters (printed as comma-separated string representations)
-* `millis` - timestamp
-* `logger` - name of the logger
+* `millis` - timestamp in milliseconds
+* `logger` - name of the logger (since 0.6)
+* `nanos` - timestamp in nanoseconds (since 0.6)
 * `tid` - thread ID
 * `trace` - entire stack trace of an attached exception, if any, or an empty string
 
