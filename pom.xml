@@ -248,7 +248,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <versions.fluency>2.7.0</versions.fluency>
+        <versions.fluency>2.7.4</versions.fluency>
         <versions.jetbrains-annotations>24.0.1</versions.jetbrains-annotations>
         <versions.junit-jupiter-engine>5.9.2</versions.junit-jupiter-engine>
     </properties>
