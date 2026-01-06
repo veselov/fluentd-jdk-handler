@@ -23,3 +23,16 @@ Dependency updates to avoid security vulnerabilities therein.
 ===
 
 Support for OS environment variables
+
+0.6
+===
+
+* Support for nano time
+* Support for logger name extraction
+* Documentation updat
+
+0.7
+===
+
+Dependency updates to avoid security vulnerabilities therein.
+
