@@ -1,2 +1,5 @@
+mvn release:prepare -DpreparationGoals= -DpushChanges=false -Dresume=false
+<check out the tag>
 mvn verify
 mvn -Pfluentd-jdk-handler.sign -Prelease-sign-artifacts deploy
+<push tag/branch>
