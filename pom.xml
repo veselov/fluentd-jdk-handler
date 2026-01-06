@@ -7,7 +7,7 @@
     <version>0.7-SNAPSHOT</version>
 
     <name>Fluentd JDK logging handler</name>
-    <description>JDK logging handler implementation that sends log to forward input of fluentd</description>
+    <description>JDK logging handler implementation that sends logs to forward input of fluentd</description>
     <url>https://fluentd-jdk-handler.vps.codes/</url>
     <licenses>
         <license>
@@ -109,28 +109,6 @@
         </pluginManagement>
 
         <plugins>
-
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>10.0.2</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>v-check</id>
-                        <configuration>
-                            <suppressionFiles>
-                                <supressionFile>dcm.suppression.xml</supressionFile>
-                            </suppressionFiles>
-                            <failBuildOnCVSS>0</failBuildOnCVSS>
-                        </configuration>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
@@ -242,6 +220,72 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>owasp-check</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${versions.owasp}</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>v-check</id>
+                                <configuration>
+                                    <suppressionFiles>
+                                        <supressionFile>dcm.suppression.xml</supressionFile>
+                                    </suppressionFiles>
+                                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                                </configuration>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>owasp-check-excelfore</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${versions.owasp}</version>
+                        <configuration>
+                            <nvdDatafeedUrl>https://dev-esync.excelfore.com/nvd/nvdcve-{0}.json.gz</nvdDatafeedUrl>
+                            <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                            <ossindexAnalyzerUrl>https://dev-esync.excelfore.com/oss/</ossindexAnalyzerUrl>
+                            <ossIndexServerId>oss-index</ossIndexServerId>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>v-check</id>
+                                <configuration>
+                                    <suppressionFiles>
+                                        <supressionFile>dcm.suppression.xml</supressionFile>
+                                    </suppressionFiles>
+                                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                                </configuration>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <properties>
@@ -251,6 +295,7 @@
         <versions.fluency>2.7.4</versions.fluency>
         <versions.jetbrains-annotations>24.0.1</versions.jetbrains-annotations>
         <versions.junit-jupiter-engine>5.9.2</versions.junit-jupiter-engine>
+        <versions.owasp>12.1.9</versions.owasp>
     </properties>
 
     <dependencies>
@@ -281,16 +326,5 @@
         </dependency>
 
     </dependencies>
-
-    <dependencyManagement>
-        <!-- This section is needed for vulnerabilities handling -->
-        <dependencies>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.14.0-rc1</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    
 </project>

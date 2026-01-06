@@ -12,6 +12,10 @@ Details on JDK logging can be found [here][2].
 
 JavaDocs for the implementation (latest version) can be found [here][3]
 
+# Building
+
+JDK 17 is needed to build. Produced code is JDK 8+.
+
 # Integration
 
 This code is available at Maven Central
